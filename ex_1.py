@@ -3,17 +3,20 @@ import librosa
 from os import listdir
 
 
+# an auxiliary class for training examples
 class SpeechTrainExample:
     def __init__(self, sample, label):
         self.sample = sample
         self.label = label
 
 
+# main classifier
 class SpeechClassifier1NN:
     def __init__(self, train_set_path):
-        # load training examples
+        # initialize
         self.examples = []
 
+        # load training examples
         for number_str, number in zip(['one', 'two', 'three', 'four', 'five'], [1, 2, 3, 4, 5]):
             dir_path = f'{train_set_path}/{number_str}/'
             for file_name in listdir(dir_path):
@@ -44,7 +47,7 @@ class SpeechClassifier1NN:
 
     @staticmethod
     def euclidean_distance(x, y):
-        return np.sqrt(np.sum((x - y) ** 2))
+        return np.linalg.norm(x - y)
 
     @staticmethod
     def load_sample(sample_path: str):
@@ -63,6 +66,7 @@ class SpeechClassifier1NN:
             DTW_score = SpeechClassifier1NN.DTW_distance(mfcc, self.examples[iExample].sample)
             euclidean_score = SpeechClassifier1NN.euclidean_distance(mfcc, self.examples[iExample].sample)
 
+            # save the best DTW score and best euclidean score with their labels
             if DTW_score < DTW_best_score:
                 DTW_best_score = DTW_score
                 DTW_label = self.examples[iExample].label
